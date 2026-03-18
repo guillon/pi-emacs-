@@ -179,10 +179,13 @@ For all user commands, `pi-core.el` does roughly this:
    - major mode
    - selected line range or full buffer
    - code text
-4. append a new header section to the output buffer
-5. dispatch to the selected backend
+4. run a backend preflight check
+   - this lets the backend reject requests before transcript output is created
+   - in async mode this is used to detect a busy RPC process early
+5. append a new header section to the output buffer
+6. dispatch the actual request to the selected backend
 
-This common flow is central to keeping sync and async behavior aligned.
+This common flow is central to keeping sync and async behavior aligned while avoiding dangling empty transcript sections on preflight failure.
 
 ### Sync flow
 

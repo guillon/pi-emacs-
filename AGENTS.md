@@ -145,7 +145,7 @@ Session mode: fallback to none: project root is outside user home
 
 ## Testing
 
-Current tests are minimal load tests in `tests/`.
+The test suite in `tests/` includes behavioral ERT coverage for the current package scope, not just load checks.
 
 Run:
 
@@ -153,15 +153,25 @@ Run:
 make test
 ```
 
+For byte-compilation checks, use:
+
+```bash
+$(EMACS) -Q --batch -L lisp -L tests -f batch-byte-compile lisp/*.el tests/*.el
+```
+
 If you change shared behavior, add or update ERT tests.
 
-Good candidates for more tests:
+Current test coverage includes:
 
 - session metadata read/write
+- session name rotation robustness
 - fallback-to-none behavior
 - prompt metadata generation
 - output buffer formatting
 - backend dispatch by `pi-execution-mode`
+- async busy/preflight behavior
+- sync JSON extraction
+- sync stderr error reporting
 
 ## Documentation expectations
 
