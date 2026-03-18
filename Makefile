@@ -1,6 +1,9 @@
 EMACS ?= emacs
 
-.PHONY: test clean
+.PHONY: all test clean distclean
+
+all:
+	@:
 
 test:
 	$(EMACS) -Q --batch \
@@ -13,3 +16,5 @@ test:
 
 clean:
 	rm -f lisp/*.elc tests/*.elc
+
+distclean: clean
