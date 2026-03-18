@@ -186,10 +186,10 @@
               (unless (alist-get 'success prompt-resp)
                 (pi--append-output root (format "[prompt failed: %S]\n" prompt-resp))
                 (pi--rpc-state-put root :busy nil)
-                (pi--finish-output source))))
+                (pi--finish-output source kind))))
          (pi--append-output root (format "[set_thinking_level failed: %S]\n" resp))
          (pi--rpc-state-put root :busy nil)
-         (pi--finish-output source))))
+         (pi--finish-output source kind))))
   nil))
 
 (provide 'pi-rpc)
