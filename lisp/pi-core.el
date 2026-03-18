@@ -93,7 +93,9 @@
   (expand-file-name (secure-hash 'sha1 root) pi-session-directory-base))
 
 (defun pi--make-session-name ()
-  (format-time-string "session-%Y%m%d-%H%M%S"))
+  (format "%s-%06x"
+          (format-time-string "session-%Y%m%d-%H%M%S")
+          (random #x1000000)))
 
 (defun pi--read-project-session-name (root)
   (let ((file (pi--project-session-meta-file root)))
@@ -131,10 +133,10 @@
           :display "fallback to none: project root is outside user home"
           :reason "project root is outside user home"))
    (t
-    (let ((session-name (or (pi--read-project-session-name root)
-                            (when create (pi--make-session-name)))))
-      (when (and create session-name
-                 (not (pi--read-project-session-name root)))
+    (let* ((existing-session-name (pi--read-project-session-name root))
+           (session-name (or existing-session-name
+                             (when create (pi--make-session-name)))))
+      (when (and create session-name (not existing-session-name))
         (pi--write-project-session-name root session-name))
       (if session-name
           (list :effective-mode 'project

@@ -45,6 +45,18 @@ BINDINGS must be a list of one symbol bound to the project directory."
         (should (equal (plist-get info :session-file)
                        (pi--session-file root (plist-get info :session-name))))))))
 
+(ert-deftest pi-make-session-name-avoids-same-second-collisions ()
+  (let ((random-values '(#x000001 #x000002)))
+    (cl-letf (((symbol-function 'format-time-string)
+               (lambda (&rest _args)
+                 "session-20260318-150000"))
+              ((symbol-function 'random)
+               (lambda (_limit)
+                 (prog1 (car random-values)
+                   (setq random-values (cdr random-values))))))
+      (should-not (equal (pi--make-session-name)
+                         (pi--make-session-name))))))
+
 (ert-deftest pi-session-info-falls-back-outside-home ()
   (let ((pi-session-mode 'project))
     (let ((info (pi--session-info "/tmp/pi-emacs-outside-home" nil)))
