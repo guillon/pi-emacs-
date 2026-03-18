@@ -60,18 +60,25 @@
         (unwind-protect
             (progn
               (pi--log "sync args: %S" args)
-              (let ((exit-code
-                     (apply #'process-file pi-command nil (list (current-buffer) stderr-file) nil args)))
+              (let* ((exit-code
+                      (apply #'process-file pi-command nil (list (current-buffer) stderr-file) nil args))
+                     (stderr
+                      (when (file-exists-p stderr-file)
+                        (with-temp-buffer
+                          (insert-file-contents stderr-file)
+                          (buffer-string)))))
                 (pi--log "sync exit=%S" exit-code)
-                (when (file-exists-p stderr-file)
-                  (pi--log "sync stderr:\n%s"
-                           (with-temp-buffer
-                             (insert-file-contents stderr-file)
-                             (buffer-string))))
+                (when stderr
+                  (pi--log "sync stderr:\n%s" stderr))
                 (if (and (integerp exit-code) (zerop exit-code))
                     (or (pi--sync-extract-text-from-json-output (buffer-string))
                         "")
-                  (format "pi failed with exit code %s" exit-code))))
+                  (let ((trimmed-stderr (and stderr (string-trim stderr))))
+                    (if (string-empty-p (or trimmed-stderr ""))
+                        (format "pi failed with exit code %s" exit-code)
+                      (format "pi failed with exit code %s\n\nstderr:\n%s"
+                              exit-code
+                              trimmed-stderr))))))
           (ignore-errors (delete-file stderr-file)))))))
 
 (defun pi--sync-open (_source)
