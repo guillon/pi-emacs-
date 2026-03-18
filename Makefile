@@ -1,6 +1,6 @@
 EMACS ?= emacs
 
-.PHONY: test
+.PHONY: test clean
 
 test:
 	$(EMACS) -Q --batch \
@@ -10,3 +10,6 @@ test:
 	  -l tests/pi-rpc-tests.el \
 	  -l tests/pi-sync-tests.el \
 	  -f ert-run-tests-batch-and-exit
+
+clean:
+	rm -f lisp/*.elc tests/*.elc
