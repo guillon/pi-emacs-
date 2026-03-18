@@ -190,10 +190,3 @@ This package assumes the `pi` CLI is already installed and configured by the use
 Upstream quick start:
 
 - https://github.com/badlogic/pi-mono/tree/main/packages/coding-agent#quick-start
-l prerequisite
-
-This package assumes the `pi` CLI is already installed and configured by the user.
-
-Upstream quick start:
-
-- https://github.com/badlogic/pi-mono/tree/main/packages/coding-agent#quick-start

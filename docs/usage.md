@@ -253,4 +253,3 @@ Then inspect the output in the per-project `pi:<project-root>` buffer.
 
 - [README](../README.md)
 - [Design notes](design.md)
-gn.md)
