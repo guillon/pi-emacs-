@@ -86,3 +86,24 @@
             (should-not (pi--rpc-state-get "/tmp/pi-project" :busy))))
       (ignore-errors (delete-process proc))
       (clrhash pi--rpc-states))))
+
+(ert-deftest pi-rpc-agent-end-finishes-transcript-and-clears-state ()
+  (let ((finished nil)
+        (source '(:root "/tmp/pi-project" :kind review)))
+    (clrhash pi--rpc-states)
+    (puthash "/tmp/pi-project"
+             (list :process t
+                   :partial ""
+                   :callbacks (make-hash-table :test #'equal)
+                   :busy t
+                   :source source
+                   :kind 'review)
+             pi--rpc-states)
+    (cl-letf (((symbol-function 'pi--finish-output)
+               (lambda (src kind)
+                 (setq finished (list src kind)))))
+      (pi--rpc-handle-event "/tmp/pi-project" '((type . "agent_end")))
+      (should (equal finished (list source 'review)))
+      (should-not (pi--rpc-state-get "/tmp/pi-project" :busy))
+      (should-not (pi--rpc-state-get "/tmp/pi-project" :source))
+      (should-not (pi--rpc-state-get "/tmp/pi-project" :kind)))))
