@@ -46,6 +46,9 @@
        (list "--no-session"))
      (list prompt))))
 
+(defun pi--sync-check (_source)
+  nil)
+
 (defun pi--sync-request (source question thinking)
   "Run one synchronous pi request and return the final assistant text."
   (let* ((root (plist-get source :root))

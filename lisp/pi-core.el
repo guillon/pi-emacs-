@@ -287,6 +287,7 @@
 
 (defun pi--dispatch (source question thinking kind)
   (setq source (plist-put source :kind kind))
+  (pi--call-backend "check" source)
   (pi--prepare-output source question kind)
   (when (eq pi-execution-mode 'sync)
     (redisplay t))

@@ -63,3 +63,26 @@
       (should (= (length sent-callbacks) 1))
       (funcall (car sent-callbacks) '((success . nil)))
       (should (equal finished (list source 'ask))))))
+
+(ert-deftest pi-rpc-sentinel-suppresses-intentional-restart-noise ()
+  (let ((messages nil)
+        (proc (make-pipe-process :name "pi-rpc-test" :buffer nil :command '("cat") :noquery t)))
+    (unwind-protect
+        (progn
+          (process-put proc 'pi-root "/tmp/pi-project")
+          (process-put proc 'pi-suppress-exit-message t)
+          (puthash "/tmp/pi-project"
+                   (list :process proc
+                         :partial ""
+                         :callbacks (make-hash-table :test #'equal)
+                         :busy t)
+                   pi--rpc-states)
+          (cl-letf (((symbol-function 'pi--append-output)
+                     (lambda (_root text)
+                       (push text messages))))
+            (delete-process proc)
+            (pi--rpc-sentinel proc "killed\n")
+            (should-not messages)
+            (should-not (pi--rpc-state-get "/tmp/pi-project" :busy))))
+      (ignore-errors (delete-process proc))
+      (clrhash pi--rpc-states))))

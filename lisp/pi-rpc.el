@@ -56,11 +56,16 @@
     (pi--rpc-state-put root :partial (substring buffer start))))
 
 (defun pi--rpc-sentinel (proc event)
-  (let ((root (process-get proc 'pi-root)))
+  (let* ((root (process-get proc 'pi-root))
+         (state (gethash root pi--rpc-states))
+         (current-proc (plist-get state :process))
+         (suppress-message (process-get proc 'pi-suppress-exit-message)))
     (pi--log "rpc sentinel %s: %s" root (string-trim event))
     (unless (process-live-p proc)
-      (pi--rpc-state-put root :busy nil)
-      (pi--append-output root (format "\n[pi rpc exited: %s]\n" (string-trim event))))))
+      (when (eq proc current-proc)
+        (pi--rpc-state-put root :busy nil))
+      (unless suppress-message
+        (pi--append-output root (format "\n[pi rpc exited: %s]\n" (string-trim event)))))))
 
 (defun pi--rpc-handle-response (root obj)
   (let* ((id (alist-get 'id obj nil nil #'equal))
@@ -144,6 +149,12 @@
     (process-send-string proc (concat (json-encode payload) "\n"))
     id))
 
+(defun pi--rpc-check (source)
+  (let ((root (plist-get source :root)))
+    (pi--rpc-ensure-process source)
+    (when (pi--rpc-state-get root :busy)
+      (user-error "pi is already busy for %s" (abbreviate-file-name root)))))
+
 (defun pi--rpc-open (source)
   (pi--rpc-ensure-process source)
   nil)
@@ -157,6 +168,7 @@
   (let* ((root (plist-get source :root))
          (proc (pi--rpc-state-get root :process)))
     (when (process-live-p proc)
+      (process-put proc 'pi-suppress-exit-message t)
       (delete-process proc)
       (remhash root pi--rpc-states))
     (pi--rpc-ensure-process source)
@@ -166,9 +178,7 @@
   "Start one asynchronous pi request and stream into the common output buffer."
   (let* ((root (plist-get source :root))
          (kind (plist-get source :kind)))
-    (pi--rpc-ensure-process source)
-    (when (pi--rpc-state-get root :busy)
-      (user-error "pi is already busy for %s" (abbreviate-file-name root)))
+    (pi--rpc-check source)
     (pi--rpc-state-put root :busy t)
     (pi--rpc-state-put root :source source)
     (pi--rpc-state-put root :kind kind)
