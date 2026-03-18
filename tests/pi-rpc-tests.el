@@ -12,6 +12,25 @@
 (ert-deftest pi-rpc-loads ()
   (should (featurep 'pi-rpc)))
 
+(ert-deftest pi-rpc-request-rejects-busy-projects ()
+  (clrhash pi--rpc-states)
+  (puthash "/tmp/pi-project"
+           (list :process t
+                 :partial ""
+                 :callbacks (make-hash-table :test #'equal)
+                 :busy t)
+           pi--rpc-states)
+  (cl-letf (((symbol-function 'pi--rpc-ensure-process)
+             (lambda (_source)
+               (gethash "/tmp/pi-project" pi--rpc-states))))
+    (should-error
+     (pi--rpc-request '(:root "/tmp/pi-project"
+                        :kind ask
+                        :session-info (:effective-mode none))
+                      "Question"
+                      "minimal")
+     :type 'user-error)))
+
 (ert-deftest pi-rpc-request-finishes-with-kind-on-setup-failure ()
   (let ((sent-callbacks nil)
         (finished nil)
