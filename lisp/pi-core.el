@@ -155,8 +155,9 @@
 
 (defun pi--relative-file-name (&optional file root)
   (if file
-      (let ((root (expand-file-name (or root (pi--project-root))))
-            (abs-file (expand-file-name file)))
+      (let* ((root (file-name-as-directory
+                    (expand-file-name (or root (pi--project-root)))))
+             (abs-file (expand-file-name file)))
         (if (string-prefix-p root abs-file)
             (file-relative-name abs-file root)
           abs-file))

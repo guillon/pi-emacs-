@@ -150,3 +150,7 @@ BINDINGS must be a list of one symbol bound to the project directory."
                     :type 'user-error)
       (should-not prepared))))
 
+(ert-deftest pi-relative-file-name-keeps-external-paths-absolute ()
+  (should (equal (pi--relative-file-name "/tmp/project2/file.txt" "/tmp/project")
+                 "/tmp/project2/file.txt")))
+
