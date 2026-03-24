@@ -25,23 +25,19 @@ Install and configure `pi` first:
       pi-session-mode 'project)  ; or 'none
 ```
 
-### straight.el
+### MELPA
 
 ```elisp
-(straight-use-package
- '(pi :type git
-      :host github
-      :repo "cguillon/pi-emacs"
-      :files ("lisp/*.el")))
-
-(require 'pi)
+(use-package pi
+  :ensure t)
 ```
 
-### Notes for package archives / MELPA
+Or without `use-package`:
 
-The package entry point is `lisp/pi.el` and includes standard package metadata
-headers (`Version`, `Package-Requires`, `Keywords`, `URL`) so the project is
-compatible with normal Emacs package archive workflows.
+```elisp
+(package-install 'pi)
+(require 'pi)
+```
 
 ## Commands
 
