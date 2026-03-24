@@ -28,6 +28,8 @@ jobs:
       - name: Run package-lint
         run: |
           emacs -Q --batch -L lisp \
+            --eval "(require 'package)" \
+            --eval "(package-initialize)" \
             --eval "(require 'package-lint)" \
             --eval "(setq package-lint-main-file \"lisp/pi.el\")" \
             -f package-lint-batch-and-exit lisp/*.el
