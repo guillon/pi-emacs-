@@ -1,4 +1,4 @@
-;;; pi.el --- Unified Emacs frontend for pi -*- lexical-binding: t; -*-
+;;; pi.el --- Frontend for the local pi coding agent -*- lexical-binding: t; -*-
 ;; Version: 0.1.0
 ;; Package-Requires: ((emacs "29.1"))
 ;; Keywords: tools, convenience, ai

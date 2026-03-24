@@ -19,5 +19,8 @@ jobs:
       - name: Run test suite
         run: make test
 
+      - name: Run package lint
+        run: make lint-package
+
       - name: Byte-compile Elisp files
         run: emacs -Q --batch -L lisp -L tests -f batch-byte-compile lisp/*.el tests/*.el
