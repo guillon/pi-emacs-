@@ -15,6 +15,8 @@ Install and configure `pi` first:
 
 ## Install
 
+### Manual
+
 ```elisp
 (add-to-list 'load-path "/path/to/pi-emacs/lisp")
 (require 'pi)
@@ -22,6 +24,24 @@ Install and configure `pi` first:
 (setq pi-execution-mode 'async   ; or 'sync
       pi-session-mode 'project)  ; or 'none
 ```
+
+### straight.el
+
+```elisp
+(straight-use-package
+ '(pi :type git
+      :host github
+      :repo "cguillon/pi-emacs"
+      :files ("lisp/*.el")))
+
+(require 'pi)
+```
+
+### Notes for package archives / MELPA
+
+The package entry point is `lisp/pi.el` and includes standard package metadata
+headers (`Version`, `Package-Requires`, `Keywords`, `URL`) so the project is
+compatible with normal Emacs package archive workflows.
 
 ## Commands
 

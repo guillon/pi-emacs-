@@ -6,6 +6,8 @@
 (require 'project)
 (require 'json)
 
+(declare-function project-root "project" (project))
+
 (defgroup pi nil
   "Common Emacs integration for the local pi agent."
   :group 'tools)
